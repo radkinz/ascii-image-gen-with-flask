@@ -1,10 +1,16 @@
-from flask import Flask
-app = Flask(__name__)
+from flask import Flask,render_template,send_file
+
+app = Flask(  # Create a flask app
+  __name__,
+  template_folder='templates',  # Name of html file folder
+#  static_folder='static'  # Name of directory for static files
+)
 
 #ascii code
-from PIL import Image
+from PIL import Image, ImageFont, ImageDraw
 
 import math
+import io
 
 #possible characters
 chars = " $@B%8&WM#/\\|()1{}[]?-_+~<>!lI,\"^. "
@@ -13,9 +19,9 @@ charlen =  len(charArray)
 interval = charlen/256
 
 #constants
-scaleFactor = 1
+scaleFactor = 0.25
 oneCharWidth = 8
-oneCharHeight = 10
+oneCharHeight = 18
 
 def getChar(inputInt):
   return charArray[math.floor(inputInt*interval)]
@@ -24,14 +30,16 @@ def getChar(inputInt):
 def index():
     output = ""
     img = Image.open("oikawa.png")
+    fnt = ImageFont.truetype(r'C:\Windows\Fonts\arial.ttf', 15)
     width, height = img.size
-    new_height = 150
-    new_width  = new_height * width / height
-    img = img.resize((int(new_width*(oneCharWidth/oneCharHeight)), int(new_height*(oneCharWidth/oneCharHeight))), Image.NEAREST)
+    # new_width  = 800
+    # new_height = new_width * width / height
+    img = img.resize((int(width*(oneCharWidth/oneCharHeight)*scaleFactor), int(height*(oneCharWidth/oneCharHeight)*scaleFactor)), Image.NEAREST)
     width, height = img.size
     pix = img.load()
 
-    print(pix[0,0])
+    outputImage = Image.new('RGB', (oneCharWidth*width, oneCharHeight*height), color = (0, 0, 0))
+    d = ImageDraw.Draw(outputImage)
 
     for y in range(height):
       for x in range(width):
@@ -39,8 +47,15 @@ def index():
         avg = math.floor(r/3 + g/3 + b/3)
         pix[x, y]  =  (avg, avg, avg)
         output += getChar(avg)
+        d.text((x*oneCharWidth, y*oneCharHeight), getChar(avg), font=fnt, fill=(r, g, b))
       output += "\n"
-    return "<p>" + output + "</p>"
+
+    file_object = io.BytesIO()
+    
+    outputImage.save(file_object, 'PNG')
+    file_object.seek(0)
+
+    return send_file(file_object, mimetype='image/PNG')
 
 if __name__ == "__main__":
     app.run()
