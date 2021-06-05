@@ -1,83 +1,96 @@
-from flask import Flask, render_template, send_file, request, redirect, url_for
+#import modules for setting up the flask app
+from flask import Flask, render_template, flash, send_file, request, redirect, url_for
 import os
 import urllib.request
 from werkzeug.utils import secure_filename
 
-app = Flask(  # Create a flask app
+#import modules needed to create the ascii image
+from PIL import Image, ImageFont, ImageDraw
+import math
+import io
+
+# Create a flask app
+app = Flask( 
   __name__,
-  template_folder='templates',  # Name of html file folder
-  static_folder='static'  # Name of directory for static files
+  template_folder='templates'
 )
 
-#file stuff for later when I check if user uploaded proper files
-ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg'])
-def allowed_file(filename):
-  return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+app.secret_key = "secret key"
+
+#constants for handling files
+ALLOWED_EXTENSIONS = set(['jpg', 'jpeg', 'png'])
+
+#constants for ascii code
+CHARS = " $@B%8&WM#/\\|()1{}[]?-_+~<>!lI,\"^. "
+CHAR_ARR = list(CHARS)
+INTERVAl = len(CHAR_ARR)/256
+SCALE_FACTOR = .40
+ONE_CHAR_WIDTH = 8
+ONE_CHAR_HEIGHT = 18
 
 #make directory to access user uploaded files
 os.makedirs(os.path.join(app.instance_path, 'htmlfi'), exist_ok=True)
 
-#ascii code
-from PIL import Image, ImageFont, ImageDraw
+#function to determine what ascii character can represent each pixel
+def getChar(avg_color_of_pixel):
+  return CHAR_ARR[math.floor(avg_color_of_pixel*INTERVAl)]
 
-import math
-import io
-
-#possible characters 
-chars = " $@B%8&WM#/\\|()1{}[]?-_+~<>!lI,\"^. "
-charArray = list(chars)
-charlen =  len(charArray)
-interval = charlen/256
-
-#constants
-scaleFactor = 0.25
-oneCharWidth = 8
-oneCharHeight = 18
-
-def getChar(inputInt):
-  return charArray[math.floor(inputInt*interval)]
-
+#setup home page
 @app.route('/')
 def index():
   return render_template('index.html')
 
-@app.route('/', methods = ['POST', 'GET'])
+#handle post request from clicking the upload button
+@app.route('/', methods = ['POST'])
 def data():
-  if request.method == 'POST':
-    form_data = request.form 
-    file = request.files['file']
+  if 'file' not in request.files:
+    flash('No file part')
+    return redirect(request.url)
+  file = request.files['file']
+  if file.filename == '':
+     flash('No image selected for uploading')
+
+  #get file type and see if the type is allowed
+  file_type = '.' in file.filename and file.filename.rsplit('.', 1)[1].lower()
+  if file and file_type in ALLOWED_EXTENSIONS:
     filename = secure_filename(file.filename)
     file.save(os.path.join(app.instance_path, 'htmlfi', filename))
+  else:
+    flash('Allowed image types are - png, jpg, jpeg')
+    return redirect(request.url)
 
-    #ascii conversion
-    output = ""
-    img = Image.open(app.instance_path + "\\htmlfi\\" + filename)
-    fnt = ImageFont.truetype(r'C:\Windows\Fonts\arial.ttf', 15)
-    width, height = img.size
-    # new_width  = 800
-    # new_height = new_width * width / height
-    img = img.resize((int(width*(oneCharWidth/oneCharHeight)*scaleFactor), int(height*(oneCharWidth/oneCharHeight)*scaleFactor)), Image.NEAREST)
-    width, height = img.size
-    pix = img.load()
+  print(file)
 
-    outputImage = Image.new('RGB', (oneCharWidth*width, oneCharHeight*height), color = (0, 0, 0))
-    d = ImageDraw.Draw(outputImage)
+  #ascii conversion
+  output = ""
+  img = Image.open(app.instance_path + "\\htmlfi\\" + filename)
+  fnt = ImageFont.truetype(r'C:\Windows\Fonts\arial.ttf', 15)
+  width, height = img.size
+  img = img.resize((int(width*(ONE_CHAR_WIDTH/ONE_CHAR_HEIGHT)*SCALE_FACTOR), int(height*(ONE_CHAR_WIDTH/ONE_CHAR_HEIGHT)*SCALE_FACTOR)), Image.NEAREST)
+  width, height = img.size
+  pix = img.load()
 
-    for y in range(height):
-      for x in range(width):
+  outputImage = Image.new('RGB', (ONE_CHAR_WIDTH*width, ONE_CHAR_HEIGHT*height), color = (0, 0, 0))
+  d = ImageDraw.Draw(outputImage)
+
+  for y in range(height):
+    for x in range(width):
+      if len(pix[x,y]) == 4:
+        r, g, b, a = pix[x,y]
+      else: 
         r, g, b = pix[x,y]
-        avg = math.floor(r/3 + g/3 + b/3)
-        pix[x, y]  =  (avg, avg, avg)
-        output += getChar(avg)
-        d.text((x*oneCharWidth, y*oneCharHeight), getChar(avg), font=fnt, fill=(r, g, b))
-      output += "\n"
+      avg = math.floor(r/3 + g/3 + b/3)
+      pix[x, y]  =  (avg, avg, avg)
+      output += getChar(avg)
+      d.text((x*ONE_CHAR_WIDTH, y*ONE_CHAR_HEIGHT), getChar(avg), font=fnt, fill=(r, g, b))
+    output += "\n"
 
-    file_object = io.BytesIO()
+  file_object = io.BytesIO()
     
-    outputImage.save(file_object, 'PNG')
-    file_object.seek(0)
+  outputImage.save(file_object, 'PNG')
+  file_object.seek(0)
 
-    return send_file(file_object, mimetype='image/PNG')
+  return send_file(file_object, mimetype='image/PNG')
 
 if __name__ == "__main__":
     app.run()
