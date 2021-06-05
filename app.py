@@ -1,10 +1,21 @@
-from flask import Flask,render_template,send_file
+from flask import Flask, render_template, send_file, request, redirect, url_for
+import os
+import urllib.request
+from werkzeug.utils import secure_filename
 
 app = Flask(  # Create a flask app
   __name__,
   template_folder='templates',  # Name of html file folder
-#  static_folder='static'  # Name of directory for static files
+  static_folder='static'  # Name of directory for static files
 )
+
+#file stuff for later when I check if user uploaded proper files
+ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg'])
+def allowed_file(filename):
+  return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+#make directory to access user uploaded files
+os.makedirs(os.path.join(app.instance_path, 'htmlfi'), exist_ok=True)
 
 #ascii code
 from PIL import Image, ImageFont, ImageDraw
@@ -12,7 +23,7 @@ from PIL import Image, ImageFont, ImageDraw
 import math
 import io
 
-#possible characters
+#possible characters 
 chars = " $@B%8&WM#/\\|()1{}[]?-_+~<>!lI,\"^. "
 charArray = list(chars)
 charlen =  len(charArray)
@@ -28,8 +39,19 @@ def getChar(inputInt):
 
 @app.route('/')
 def index():
+  return render_template('index.html')
+
+@app.route('/', methods = ['POST', 'GET'])
+def data():
+  if request.method == 'POST':
+    form_data = request.form 
+    file = request.files['file']
+    filename = secure_filename(file.filename)
+    file.save(os.path.join(app.instance_path, 'htmlfi', filename))
+
+    #ascii conversion
     output = ""
-    img = Image.open("oikawa.png")
+    img = Image.open(app.instance_path + "\\htmlfi\\" + filename)
     fnt = ImageFont.truetype(r'C:\Windows\Fonts\arial.ttf', 15)
     width, height = img.size
     # new_width  = 800
@@ -43,7 +65,7 @@ def index():
 
     for y in range(height):
       for x in range(width):
-        r, g, b, a = pix[x,y]
+        r, g, b = pix[x,y]
         avg = math.floor(r/3 + g/3 + b/3)
         pix[x, y]  =  (avg, avg, avg)
         output += getChar(avg)
