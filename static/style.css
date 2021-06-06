@@ -1,0 +1,29 @@
+body {
+	background-color: white;
+	color: black;
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+	font-family: 'Poppins', sans-serif;
+}
+
+h1 {
+	font-size: 50px;
+	font-weight: 800;
+	padding: 10px;
+	background-color: #e8a7ff;
+}
+
+form {
+	background-color: #caffe8;
+	padding: 10px;
+}
+
+#UploadButton {
+	margin-top: 10px;
+}
+
+#FlaskMsg {
+	font-size: 25px;
+	background-color: #ffd6a7;
+}
