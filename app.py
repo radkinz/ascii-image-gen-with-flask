@@ -13,7 +13,8 @@ import io
 # Create a flask app
 app = Flask( 
   __name__,
-  template_folder='templates'
+  template_folder='templates',
+  static_folder='static'
 )
 
 #create secret key
