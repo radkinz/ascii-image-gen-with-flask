@@ -1,28 +1,28 @@
 <!DOCTYPE html>
 
 <head>
-    <title>Hello World</title>
-    <!-- <link href="/static/base.css" rel="stylesheet" type="text/css" /> -->
-    <link href="https://fonts.googleapis.com/css?family=IBM+Plex+Sans&display=swap" rel="stylesheet" />
+   <title>Hello World</title>
+   <link href="/static/style.css" rel="stylesheet" type="text/css" />
+   <link rel="preconnect" href="https://fonts.gstatic.com">
+   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600&display=swap" rel="stylesheet"> 
 </head>
 
 <body>
-    <h1>
-        HI THERE
-    </h1>
-
-    {% with messages = get_flashed_messages() %}
-   {% if messages %}
+   <h1>
+      Image to Ascii Generator
+   </h1>
+   <div id = "FlaskMsg">
+      {% with messages = get_flashed_messages() %}
+      {% if messages %}
       {% for message in messages %}
-         {{ message }}
+      {{ message }}
       {% endfor %}
-   {% endif %}
-{% endwith %}
-
-    <form method="post" action="/" enctype="multipart/form-data">
-                    
-                 <label>Source Image:</label>
-                 <span> <input type="file" name="file" autocomplete="off" required></span>
-                     <input type="submit" value="Upload">
-        </form>
+      {% endif %}
+      {% endwith %}
+   </div>
+   <form method="post" action="/" enctype="multipart/form-data">
+      <label>Source Image:</label>
+      <input type="file" name="file" autocomplete="off" required>
+     <div> <input type="submit" id = "UploadButton" value="Upload"> </div>
+   </form>
 </body>
