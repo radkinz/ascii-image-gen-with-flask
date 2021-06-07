@@ -1,7 +1,6 @@
 #import modules for setting up the flask app
 from flask import Flask, render_template, flash, send_file, request, redirect, url_for
 import os
-import urllib.request
 from werkzeug.utils import secure_filename
 import secrets
 
