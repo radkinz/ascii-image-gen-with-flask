@@ -27,7 +27,6 @@ ALLOWED_EXTENSIONS = set(['jpg', 'jpeg', 'png'])
 CHARS = " $@B%8&WM#/\\|()1{}[]?-_+~<>!lI,\"^. "
 CHAR_ARR = list(CHARS)
 INTERVAl = len(CHAR_ARR)/256
-SCALE_FACTOR = .40
 ONE_CHAR_WIDTH = 8
 ONE_CHAR_HEIGHT = 18
 
@@ -49,6 +48,12 @@ def data():
   #get file data 
   file = request.files['file']
 
+  #get form data from other inputs like scale factor
+  form_data = request.form
+
+  #set scale factor from user input
+  Scale_Factor = eval(form_data['ScaleFactor'])
+
   #get file type and see if the type is allowed
   file_type = '.' in file.filename and file.filename.rsplit('.', 1)[1].lower()
   if file and file_type in ALLOWED_EXTENSIONS:
@@ -67,7 +72,7 @@ def data():
 
   #resize uploaded image
   width, height = img.size
-  img = img.resize((int(width*(ONE_CHAR_WIDTH/ONE_CHAR_HEIGHT)*SCALE_FACTOR), int(height*(ONE_CHAR_WIDTH/ONE_CHAR_HEIGHT)*SCALE_FACTOR)), Image.NEAREST)
+  img = img.resize((int(width*(ONE_CHAR_WIDTH/ONE_CHAR_HEIGHT)*Scale_Factor), int(height*(ONE_CHAR_WIDTH/ONE_CHAR_HEIGHT)*Scale_Factor)), Image.NEAREST)
   width, height = img.size
 
   #load image pixels

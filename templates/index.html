@@ -1,12 +1,10 @@
 <!DOCTYPE html>
-
 <head>
-   <title>Hello World</title>
+   <title>Ascii Art is Cool!</title>
    <link href="/static/style.css" rel="stylesheet" type="text/css" />
    <link rel="preconnect" href="https://fonts.gstatic.com">
-   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600&display=swap" rel="stylesheet"> 
+   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@600&display=swap" rel="stylesheet">
 </head>
-
 <body>
    <h1>
       Image to Ascii Generator
@@ -21,8 +19,14 @@
       {% endwith %}
    </div>
    <form method="post" action="/" enctype="multipart/form-data">
-      <label>Source Image:</label>
-      <input type="file" name="file" autocomplete="off" required>
-     <div> <input type="submit" id = "UploadButton" value="Upload"> </div>
+      <div>
+         <label>Scale Factor:</label>
+         <input type="number" name="ScaleFactor" id="ScaleFactor" min="0.01" max="3" step=".01" value="0.5">
+      </div>
+      <div>
+         <label>Source Image:</label>
+         <input type="file" name="file" autocomplete="off" required>
+      </div>
+      <div> <input type="submit" id = "UploadButton" value="Upload"> </div>
    </form>
 </body>
