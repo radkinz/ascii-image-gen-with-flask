@@ -24,7 +24,7 @@ app.secret_key = secret_key
 ALLOWED_EXTENSIONS = set(['jpg', 'jpeg', 'png'])
 
 #constants for ascii code
-CHARS = " $@B%8&WM#/\\|()1{}[]?-_+~<>!lI,\"^. "
+CHARS = "$@B%8&WM#/\\|()1{}[]?-_+~<>!lI,\"^."
 CHAR_ARR = list(CHARS)
 INTERVAl = len(CHAR_ARR)/256
 ONE_CHAR_WIDTH = 8
@@ -51,8 +51,9 @@ def data():
   #get form data from other inputs like scale factor
   form_data = request.form
 
-  #set scale factor from user input
-  Scale_Factor = eval(form_data['ScaleFactor'])
+  #set scale factors from user input
+  Scale_Factor_Width = eval(form_data['ScaleFactorWidth'])
+  Scale_Factor_Height = eval(form_data['ScaleFactorHeight'])
 
   #get file type and see if the type is allowed
   file_type = '.' in file.filename and file.filename.rsplit('.', 1)[1].lower()
@@ -66,13 +67,12 @@ def data():
   #ascii conversion
 
   #set up ascii variables 
-  output = ""
   img = Image.open(app.instance_path + "\\htmlfi\\" + filename)
   fnt = ImageFont.truetype(r'C:\Windows\Fonts\arial.ttf', 15)
 
   #resize uploaded image
   width, height = img.size
-  img = img.resize((int(width*(ONE_CHAR_WIDTH/ONE_CHAR_HEIGHT)*Scale_Factor), int(height*(ONE_CHAR_WIDTH/ONE_CHAR_HEIGHT)*Scale_Factor)), Image.NEAREST)
+  img = img.resize((int(width*(ONE_CHAR_WIDTH/ONE_CHAR_HEIGHT)*Scale_Factor_Width), int(height*(ONE_CHAR_WIDTH/ONE_CHAR_HEIGHT)*Scale_Factor_Height)), Image.NEAREST)
   width, height = img.size
 
   #load image pixels
