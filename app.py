@@ -24,7 +24,7 @@ app.secret_key = secret_key
 ALLOWED_EXTENSIONS = set(['jpg', 'jpeg', 'png'])
 
 #constants for ascii code
-CHARS = "$@B%8&WM#/\\|()1{}[]?-_+~<>!lI,\"^."
+CHARS = " $@B%8&WM#/\\|()1{}[]?-_+~<>!lI,\"^. "
 CHAR_ARR = list(CHARS)
 INTERVAl = len(CHAR_ARR)/256
 ONE_CHAR_WIDTH = 8
@@ -50,10 +50,18 @@ def data():
 
   #get form data from other inputs like scale factor
   form_data = request.form
+  print(form_data)
 
   #set scale factors from user input
   Scale_Factor_Width = eval(form_data['ScaleFactorWidth'])
   Scale_Factor_Height = eval(form_data['ScaleFactorHeight'])
+
+  #set return type
+  print(eval(form_data["ReturnType"]) == 1)
+  if eval(form_data["ReturnType"]) == 1:
+     output_file_type_is_image = True
+  else:
+     output_file_type_is_image = False
 
   #get file type and see if the type is allowed
   file_type = '.' in file.filename and file.filename.rsplit('.', 1)[1].lower()
@@ -78,6 +86,8 @@ def data():
   #load image pixels
   pix = img.load()
 
+  output_file = open("Output.txt", "w")
+
   #create output image and set up ImageDraw method to draw the ascii chars over the output Img
   outputImage = Image.new('RGB', (ONE_CHAR_WIDTH*width, ONE_CHAR_HEIGHT*height), color = (0, 0, 0))
   d = ImageDraw.Draw(outputImage)
@@ -95,17 +105,20 @@ def data():
       
       #get the output ascii character based off the pixel's greyscale value
       output_char = getChar(avg)
+      output_file.write(getChar(avg))
 
       #draw the output character ontop of the output img
       d.text((x*ONE_CHAR_WIDTH, y*ONE_CHAR_HEIGHT), output_char, font=fnt, fill=(r, g, b))
+    output_file.write("\n")
 
-  #save output image and prepare to send to user
-  file_object = io.BytesIO()
-  outputImage.save(file_object, 'PNG')
-  file_object.seek(0)
-
-  #return output image and display to user
-  return send_file(file_object, mimetype='image/PNG')
+  if output_file_type_is_image:
+    #save and return output image and display to user
+    outputImage.save('output.png')
+    return send_file("output.png")
+  else:
+    #save and return text file
+    output_file.close()
+    return send_file("Output.txt")
 
 if __name__ == "__main__":
     app.run()
