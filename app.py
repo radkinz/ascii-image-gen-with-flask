@@ -24,18 +24,11 @@ app.secret_key = secret_key
 ALLOWED_EXTENSIONS = set(['jpg', 'jpeg', 'png'])
 
 #constants for ascii code
-CHARS = " $@B%8&WM#/\\|()1{}[]?-_+~<>!lI,\"^. "
-CHAR_ARR = list(CHARS)
-INTERVAl = len(CHAR_ARR)/256
 ONE_CHAR_WIDTH = 8
 ONE_CHAR_HEIGHT = 18
 
 #make directory to access user uploaded files
 os.makedirs(os.path.join(app.instance_path, 'htmlfi'), exist_ok=True)
-
-#function to determine what ascii character can represent each pixel
-def getChar(avg_color_of_pixel):
-  return CHAR_ARR[math.floor(avg_color_of_pixel*INTERVAl)]
 
 #setup home page
 @app.route('/')
@@ -55,9 +48,10 @@ def data():
   #set scale factors from user input
   Scale_Factor_Width = eval(form_data['ScaleFactorWidth'])
   Scale_Factor_Height = eval(form_data['ScaleFactorHeight'])
+  Char_Arr = list(form_data['CharArray'])
+  Interval = len(Char_Arr)/256
 
   #set return type
-  print(eval(form_data["ReturnType"]) == 1)
   if eval(form_data["ReturnType"]) == 1:
      output_file_type_is_image = True
   else:
@@ -104,8 +98,8 @@ def data():
       avg = math.floor(r/3 + g/3 + b/3)
       
       #get the output ascii character based off the pixel's greyscale value
-      output_char = getChar(avg)
-      output_file.write(getChar(avg))
+      output_char = Char_Arr[math.floor(avg*Interval)]
+      output_file.write(Char_Arr[math.floor(avg*Interval)])
 
       #draw the output character ontop of the output img
       d.text((x*ONE_CHAR_WIDTH, y*ONE_CHAR_HEIGHT), output_char, font=fnt, fill=(r, g, b))
