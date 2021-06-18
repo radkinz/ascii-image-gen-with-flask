@@ -1,8 +1,10 @@
 # Image to Ascii Generator Web App
 
-Just started this project, and there is still a lot more to go:) 
+Some code that utlizes the flask module to create a python based web application. The app takes in an input of an image and outputs the ascii version. The algorithm is based on mapping the greyscale color value of each pixel to an ascii character. Some characters act "brighter" than others because it takes up more space, for example the "@" sign versus the "-" would be more eye-cataching from a distance. Thus, if a pixel has alot of energy like an edge, it might be better to use the @ sign in the ascii output.
 
-## Progress Logs
+## Progress Logs 
+
+6/12/21: The user can now adjust the character array through an input. At this point, I feel pretty contempt with the project and all the features it provides.
 
 6/9/21: I added a switch, so the user can go back and forth between the output being a text file and the output being a png. There are also two scale factors incase the user wants to distort the image. Next steps, I want the user to be able to change the character array, which are the ascii chars that the algorithm selects from to make the art. Sometimes changing the characters of the array help the output look better, but it is all dependent on the type of image. By the user being able to change this feature, it helps the program be more efficient at meeting the user's needs and it also will help the user better understand how the ascii generator works.
 
