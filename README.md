@@ -2,6 +2,14 @@
 
 Some code that utlizes the flask module to create a python based web application. The app takes in an input of an image and outputs the ascii version. The algorithm is based on mapping the greyscale color value of each pixel to an ascii character. Some characters act "brighter" than others because it takes up more space, for example the "@" sign versus the "-" would be more eye-cataching from a distance. Thus, if a pixel has alot of energy like an edge, it might be better to use the @ sign in the ascii output.
 
+## Example
+
+### Input
+![oikawaWithGlasses](https://user-images.githubusercontent.com/81705278/122501849-7bf29580-cfc3-11eb-9586-6b151668c45b.jpg)
+
+### Output
+![Screenshot 2021-06-17 at 23-31-35 output png (PNG Image, 800 × 900 pixels) — Scaled (54%)](https://user-images.githubusercontent.com/81705278/122502202-2b2f6c80-cfc4-11eb-9b0f-3c26998c00a5.png)
+
 ## Progress Logs 
 
 6/12/21: The user can now adjust the character array through an input. At this point, I feel pretty contempt with the project and all the features it provides.
