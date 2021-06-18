@@ -1,4 +1,4 @@
-# Image to Ascii Generator Web App
+# Image to Ascii Generator
 
 Some code that utlizes the flask module to create a python based web application. The app takes in an input of an image and outputs the ascii version. The algorithm is based on mapping the greyscale color value of each pixel to an ascii character. Some characters act "brighter" than others because it takes up more space, for example the "@" sign versus the "-" would be more eye-cataching from a distance. Thus, if a pixel has alot of energy like an edge, it might be better to use the @ sign in the ascii output.
 
