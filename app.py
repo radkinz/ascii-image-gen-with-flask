@@ -43,7 +43,6 @@ def data():
 
   #get form data from other inputs like scale factor
   form_data = request.form
-  print(form_data)
 
   #set scale factors from user input
   Scale_Factor_Width = eval(form_data['ScaleFactorWidth'])
