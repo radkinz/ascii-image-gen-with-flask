@@ -47,7 +47,7 @@ def data():
   #get uploaded img
   image = request.files['pic']
   img = Image.open(image)
-  fnt = ImageFont.truetype(r'C:\Windows\Fonts\arial.ttf', 15)
+  fnt = ImageFont.truetype('arial.ttf', 15)
 
   #resize uploaded image
   width, height = img.size
