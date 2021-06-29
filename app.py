@@ -1,8 +1,6 @@
 #import modules for setting up the flask app
-from flask import Flask, render_template, flash, send_file, request, redirect, url_for
-import os
+from flask import Flask, render_template, Response, flash, send_file, request, redirect, url_for
 from werkzeug.utils import secure_filename
-import secrets
 
 #import modules needed to create the ascii image
 from PIL import Image, ImageFont, ImageDraw
@@ -16,19 +14,12 @@ app = Flask(
   static_folder='static'
 )
 
-#create secret key
-secret_key = secrets.token_hex(16)
-app.secret_key = secret_key
-
 #constants for handling files
 ALLOWED_EXTENSIONS = set(['jpg', 'jpeg', 'png'])
 
 #constants for ascii code
 ONE_CHAR_WIDTH = 8
 ONE_CHAR_HEIGHT = 18
-
-#make directory to access user uploaded files
-os.makedirs(os.path.join(app.instance_path, 'htmlfi'), exist_ok=True)
 
 #setup home page
 @app.route('/')
@@ -38,9 +29,6 @@ def index():
 #handle post request from clicking the upload button
 @app.route('/', methods = ['POST'])
 def data():
-  #get file data 
-  file = request.files['file']
-
   #get form data from other inputs like scale factor
   form_data = request.form
 
@@ -56,19 +44,9 @@ def data():
   else:
      output_file_type_is_image = False
 
-  #get file type and see if the type is allowed
-  file_type = '.' in file.filename and file.filename.rsplit('.', 1)[1].lower()
-  if file and file_type in ALLOWED_EXTENSIONS:
-    filename = secure_filename(file.filename)
-    file.save(os.path.join(app.instance_path, 'htmlfi', filename))
-  else:
-    flash('Allowed image types are - png, jpg, jpeg')
-    return redirect(request.url)
-
-  #ascii conversion
-
-  #set up ascii variables 
-  img = Image.open(app.instance_path + "\\htmlfi\\" + filename)
+  #get uploaded img
+  image = request.files['pic']
+  img = Image.open(image)
   fnt = ImageFont.truetype(r'C:\Windows\Fonts\arial.ttf', 15)
 
   #resize uploaded image
@@ -113,5 +91,4 @@ def data():
     output_file.close()
     return send_file("Output.txt")
 
-if __name__ == "__main__":
-    app.run()
+
