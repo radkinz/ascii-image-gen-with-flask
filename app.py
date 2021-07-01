@@ -45,8 +45,18 @@ def data():
      output_file_type_is_image = False
 
   #get uploaded img
-  image = request.files['pic']
-  img = Image.open(image)
+  file = request.files['pic']
+
+  #get img type and see if the type is allowed
+  file_type = '.' in file.filename and file.filename.rsplit('.', 1)[1].lower()
+  if file and file_type in ALLOWED_EXTENSIONS:
+    filename = secure_filename(file.filename)
+    img = Image.open(file)
+  else:
+    flash('Allowed image types are - png, jpg, jpeg')
+    return redirect(request.url)
+
+  #setup font
   fnt = ImageFont.truetype('arial.ttf', 15)
 
   #resize uploaded image
